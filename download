@@ -1,0 +1,3 @@
+SECRET_KEY=zecon-secret-change-this
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD=zecon2025

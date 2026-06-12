@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Zecon Admin Login</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;600;700&display=swap" rel="stylesheet"/>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Barlow',sans-serif;background:#0a0e1a;color:white;min-height:100vh;display:flex;align-items:center;justify-content:center;}
+  .box{background:#111827;padding:52px;border-radius:6px;border:1px solid rgba(249,115,22,0.2);width:100%;max-width:400px;}
+  .logo{font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:3px;margin-bottom:6px;}
+  .logo span{color:#f97316;}
+  .sub{color:#6b7280;font-size:14px;margin-bottom:36px;}
+  label{display:block;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#9ca3af;margin-bottom:7px;}
+  input{width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:white;padding:13px 15px;border-radius:4px;font-family:'Barlow',sans-serif;font-size:15px;outline:none;margin-bottom:18px;transition:border-color 0.3s;}
+  input:focus{border-color:#f97316;}
+  button{width:100%;background:#f97316;color:white;padding:14px;border:none;border-radius:4px;font-family:'Barlow',sans-serif;font-size:14px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;}
+  button:hover{background:#ea580c;}
+  .error{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#fca5a5;padding:12px;border-radius:4px;margin-bottom:18px;font-size:14px;}
+</style>
+</head>
+<body>
+<div class="box">
+  <div class="logo">ZE<span>CON</span> ADMIN</div>
+  <p class="sub">Login to manage appointments & feedback</p>
+  {% if error %}<div class="error">{{ error }}</div>{% endif %}
+  <form method="POST">
+    <label>Username</label>
+    <input type="text" name="username" placeholder="admin" required/>
+    <label>Password</label>
+    <input type="password" name="password" placeholder="••••••••" required/>
+    <button type="submit">Login →</button>
+  </form>
+</div>
+</body>
+</html>

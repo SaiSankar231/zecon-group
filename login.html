@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Zecon Admin Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;600;700&display=swap" rel="stylesheet"/>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Barlow',sans-serif;background:#060910;color:white;display:flex;min-height:100vh;}
+
+  .sidebar{width:220px;background:#0a0e1a;border-right:1px solid rgba(249,115,22,0.12);padding:28px 0;flex-shrink:0;position:fixed;top:0;bottom:0;}
+  .s-logo{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;padding:0 22px 24px;border-bottom:1px solid rgba(255,255,255,0.06);}
+  .s-logo span{color:#f97316;}
+  .s-nav{padding:16px 0;}
+  .s-link{display:block;padding:12px 22px;color:#9ca3af;text-decoration:none;font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;transition:all 0.2s;cursor:pointer;border:none;background:none;width:100%;text-align:left;}
+  .s-link:hover,.s-link.active{color:white;background:rgba(249,115,22,0.1);border-left:3px solid #f97316;padding-left:19px;}
+  .s-logout{position:absolute;bottom:24px;left:0;right:0;padding:0 22px;}
+  .s-logout a{color:#6b7280;text-decoration:none;font-size:13px;}
+  .s-logout a:hover{color:#f97316;}
+
+  .main{margin-left:220px;flex:1;padding:36px;}
+
+  .tab-content{display:none;}
+  .tab-content.active{display:block;}
+
+  .page-title{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:2px;margin-bottom:28px;}
+
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:36px;}
+  .stat-card{background:#0a0e1a;padding:22px;border-radius:6px;border:1px solid rgba(255,255,255,0.06);}
+  .stat-card .num{font-family:'Bebas Neue',sans-serif;font-size:42px;color:#f97316;line-height:1;}
+  .stat-card .lbl{font-size:11px;color:#6b7280;letter-spacing:2px;text-transform:uppercase;margin-top:4px;}
+
+  table{width:100%;border-collapse:collapse;background:#0a0e1a;border-radius:6px;overflow:hidden;}
+  th{background:#111827;padding:13px 15px;text-align:left;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#6b7280;}
+  td{padding:13px 15px;border-top:1px solid rgba(255,255,255,0.05);font-size:14px;color:#cbd5e1;vertical-align:middle;}
+  tr:hover td{background:rgba(249,115,22,0.03);}
+
+  .badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;}
+  .badge-new{background:rgba(249,115,22,0.15);color:#f97316;border:1px solid rgba(249,115,22,0.3);}
+  .badge-confirmed{background:rgba(59,130,246,0.15);color:#60a5fa;border:1px solid rgba(59,130,246,0.3);}
+  .badge-done{background:rgba(34,197,94,0.15);color:#4ade80;border:1px solid rgba(34,197,94,0.3);}
+
+  .stars{color:#f97316;font-size:15px;}
+  .stars.gray{color:#374151;}
+
+  select{background:#111827;border:1px solid rgba(255,255,255,0.1);color:white;padding:5px 8px;border-radius:4px;font-family:'Barlow',sans-serif;font-size:13px;outline:none;cursor:pointer;}
+  select:focus{border-color:#f97316;}
+  select option{background:#111827;}
+
+  .btn-del{background:rgba(239,68,68,0.1);color:#fca5a5;border:1px solid rgba(239,68,68,0.25);padding:5px 12px;border-radius:4px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Barlow',sans-serif;text-transform:uppercase;letter-spacing:1px;}
+  .btn-del:hover{background:rgba(239,68,68,0.25);}
+
+  .empty{text-align:center;color:#374151;padding:52px;font-size:15px;}
+
+  .msg-cell{max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#6b7280;font-size:13px;}
+
+  @media(max-width:800px){
+    .sidebar{display:none;}
+    .main{margin-left:0;padding:20px;}
+    .stats{grid-template-columns:1fr 1fr;}
+  }
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="s-logo">ZE<span>CON</span><br/>ADMIN</div>
+  <div class="s-nav">
+    <button class="s-link active" onclick="showTab('appointments',this)">📋 Appointments</button>
+    <button class="s-link" onclick="showTab('feedback',this)">⭐ Feedback</button>
+    <button class="s-link" onclick="window.open('/')">🌐 View Site</button>
+  </div>
+  <div class="s-logout"><a href="/admin/logout">← Logout</a></div>
+</div>
+
+<div class="main">
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat-card">
+      <div class="num">{{ stats.total_appt }}</div>
+      <div class="lbl">Total Bookings</div>
+    </div>
+    <div class="stat-card">
+      <div class="num" style="color:#fb923c">{{ stats.new_appt }}</div>
+      <div class="lbl">New Bookings</div>
+    </div>
+    <div class="stat-card">
+      <div class="num">{{ stats.total_fb }}</div>
+      <div class="lbl">Reviews</div>
+    </div>
+    <div class="stat-card">
+      <div class="num">{{ stats.avg_rating }}</div>
+      <div class="lbl">Avg Rating</div>
+    </div>
+  </div>
+
+  <!-- APPOINTMENTS -->
+  <div id="tab-appointments" class="tab-content active">
+    <div class="page-title">APPOINTMENT BOOKINGS</div>
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Name</th>
+          <th>Phone</th>
+          <th>Email</th>
+          <th>Project</th>
+          <th>Date</th>
+          <th>Message</th>
+          <th>Status</th>
+          <th>Received</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in appointments %}
+        <tr>
+          <td style="color:#4b5563">{{ a.id }}</td>
+          <td><strong>{{ a.name }}</strong></td>
+          <td>{{ a.phone }}</td>
+          <td style="font-size:13px">{{ a.email }}</td>
+          <td>{{ a.project }}</td>
+          <td style="white-space:nowrap">{{ a.date }}</td>
+          <td class="msg-cell">{{ a.message or '—' }}</td>
+          <td>
+            <span class="badge badge-{{ a.status.lower() }}">{{ a.status }}</span>
+          </td>
+          <td style="white-space:nowrap;font-size:12px;color:#4b5563">{{ a.created_at.strftime('%d %b %Y') }}</td>
+          <td style="white-space:nowrap">
+            <form method="POST" action="/admin/appointment/{{ a.id }}/status" style="display:inline">
+              <select name="status" onchange="this.form.submit()">
+                <option {% if a.status=='New' %}selected{% endif %}>New</option>
+                <option {% if a.status=='Confirmed' %}selected{% endif %}>Confirmed</option>
+                <option {% if a.status=='Done' %}selected{% endif %}>Done</option>
+              </select>
+            </form>
+            <form method="POST" action="/admin/appointment/{{ a.id }}/delete" style="display:inline" onsubmit="return confirm('Delete this booking?')">
+              <button class="btn-del">✕</button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="10" class="empty">No appointments yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- FEEDBACK -->
+  <div id="tab-feedback" class="tab-content">
+    <div class="page-title">CUSTOMER FEEDBACK</div>
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Rating</th>
+          <th>Message</th>
+          <th>Date</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for f in feedbacks %}
+        <tr>
+          <td style="color:#4b5563">{{ f.id }}</td>
+          <td><strong>{{ f.name }}</strong></td>
+          <td style="font-size:13px">{{ f.email or '—' }}</td>
+          <td>
+            {% for i in range(1,6) %}
+              <span class="{% if i <= f.rating %}stars{% else %}stars gray{% endif %}">★</span>
+            {% endfor %}
+          </td>
+          <td class="msg-cell">{{ f.message }}</td>
+          <td style="white-space:nowrap;font-size:12px;color:#4b5563">{{ f.created_at.strftime('%d %b %Y') }}</td>
+          <td>
+            <form method="POST" action="/admin/feedback/{{ f.id }}/delete" onsubmit="return confirm('Delete this feedback?')">
+              <button class="btn-del">✕</button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="7" class="empty">No feedback yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<script>
+function showTab(name, el) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.s-link').forEach(l => l.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  el.classList.add('active');
+}
+</script>
+</body>
+</html>
